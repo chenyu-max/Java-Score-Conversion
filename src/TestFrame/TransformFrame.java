@@ -61,50 +61,38 @@ public class TransformFrame extends JFrame {
         this.add(mainPanel);
     }
 
-    /**
-     *
-     * @param str 传入的字符串
-     * @return 是整数返回true,否则返回false
-     */
-    public static boolean isInteger(String str) {
-        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
-        return pattern.matcher(str).matches();
-    }
 
     private void addListener() {
         // 转换按钮 监听事件
         transformButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String originalNumber = label1Field.getText();
-                if (!isInteger(originalNumber)) {
-                    label2.setVisible(false);
-                    label3.setText("数据错误！");
+                try {
+                    float oNumber = Float.parseFloat(originalNumber);
+                    int digitsNumber = Math.round(oNumber * 10 % 100); // 个位数
+
+                    label2.setVisible(true);
+                    if (oNumber == 100)
+                        label3.setText("5.0分");
+                    else if (oNumber >= 90 && oNumber <= 100) {
+                        label3.setText("4." + digitsNumber + "分");
+                    } else if (oNumber <= 89 && oNumber >= 80) {
+                        label3.setText("3." + digitsNumber + "分");
+                    } else if (oNumber <= 79 && oNumber >= 70) {
+                        label3.setText("2." + digitsNumber + "分");
+                    } else if (oNumber <= 69 && oNumber >= 60) {
+                        label3.setText("1." + digitsNumber + "分");
+                    } else if (oNumber < 60 && oNumber >= 0) {
+                        label3.setText("0分");
+                    } else {
+                        label2.setVisible(false);
+                        label3.setText("数据错误！");
+                        JOptionPane.showMessageDialog(TransformFrame.this, "输入的数据不在识别范围内！");
+                        label3.setText("");
+                        label1Field.setText("");
+                    }
+                } catch (NumberFormatException nfe) {
                     JOptionPane.showMessageDialog(TransformFrame.this, "输入的数据不在识别范围内！");
-                    label3.setText("");
-                    label1Field.setText("");
-                    return;
-                }
-                int oNumber = Integer.parseInt(originalNumber);
-                int digitsNumber = oNumber % 10; // 个位数
-                label2.setVisible(true);
-                if (oNumber == 100)
-                    label3.setText("5.0分");
-                else if (oNumber >= 90 && oNumber <= 100) {
-                    label3.setText("4." + digitsNumber + "分");
-                } else if (oNumber <= 89 && oNumber >= 80) {
-                    label3.setText("3." + digitsNumber + "分");
-                } else if (oNumber <= 79 && oNumber >= 70) {
-                    label3.setText("2." + digitsNumber + "分");
-                } else if (oNumber <= 69 && oNumber >= 60) {
-                    label3.setText("1." + digitsNumber + "分");
-                } else if (oNumber < 60 && oNumber >= 0) {
-                    label3.setText("0分");
-                } else {
-                    label2.setVisible(false);
-                    label3.setText("数据错误！");
-                    JOptionPane.showMessageDialog(TransformFrame.this, "输入的数据不在识别范围内！");
-                    label3.setText("");
-                    label1Field.setText("");
                 }
             }
         });
